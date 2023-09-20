@@ -1,0 +1,24 @@
+version: 0.2
+
+env:
+  variables:
+    TERRAFORM_VERSION: '1.5.7'
+
+phases:
+  install:
+    commands:
+      - echo Installing Terraform...
+      - wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+      - unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+      - mv terraform /usr/local/bin/
+      - terraform --version
+  pre_build:
+    commands:
+      - echo Prebuild step...
+      - terraform init
+      - terraform workspace select ${TERRAFORM_WORKSPACE} || terraform workspace new ${TERRAFORM_WORKSPACE}
+  build:
+    commands:
+      - echo Build started on `date`
+      - terraform plan -var-file=${TERRAFORM_WORKSPACE}.tfvars
+      - terraform apply -var-file=${TERRAFORM_WORKSPACE}.tfvars -auto-approve
