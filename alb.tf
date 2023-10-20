@@ -29,11 +29,28 @@ resource "aws_lb_listener" "ecs_alb_listener" {
   }
 }
 
+resource "aws_lb_listener_rule" "ecs_alb_listener_rule" {
+  listener_arn = aws_lb_listener.ecs_alb_listener.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ecs_tg.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/"]
+    }
+  }
+}
+
+
 resource "aws_lb_target_group" "ecs_tg" {
-  name     = "cd-demo-ecs-tg-${terraform.workspace}"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.ecs_vpc.id
+  name                 = "cd-demo-ecs-tg-${terraform.workspace}"
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = aws_vpc.ecs_vpc.id
+  deregistration_delay = 30
 
   health_check {
     enabled             = true
@@ -44,6 +61,24 @@ resource "aws_lb_target_group" "ecs_tg" {
     unhealthy_threshold = 2
   }
 }
+
+resource "aws_lb_target_group" "ecs_tg_green" {
+  name                 = "cd-demo-ecs-tg-green-${terraform.workspace}"
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = aws_vpc.ecs_vpc.id
+  deregistration_delay = 30
+
+  health_check {
+    enabled             = true
+    interval            = 30
+    path                = "/"
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
 
 resource "aws_security_group" "alb_sg" {
   name        = "cd-demo-${terraform.workspace}-alb-sg"

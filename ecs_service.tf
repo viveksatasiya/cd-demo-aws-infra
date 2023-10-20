@@ -9,7 +9,7 @@ resource "aws_ecs_task_definition" "ecs_task" {
     image = "nginx:latest"
     portMappings = [{
       containerPort = 80
-      hostPort      = 80
+      hostPort      = 0
     }]
   }])
 }
@@ -22,7 +22,13 @@ resource "aws_ecs_service" "ecs_service" {
 
   launch_type = "EC2"
 
-  network_configuration {
-    subnets = aws_subnet.ecs_subnet.*.id
+  deployment_controller {
+    type = "CODE_DEPLOY"
+  }
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.ecs_tg.arn
+    container_name   = "nginx-container" # Name of the container in the task definition
+    container_port   = 80
   }
 }

@@ -6,7 +6,7 @@ task_family   = "family"
 desired_count = 2
 
 ec2_ami_id           = "ami-0036f358750e191d0"
-ec2_instance_type    = "t2.small"
+ec2_instance_type    = "t3.small"
 asg_min_size         = 1
 asg_max_size         = 3
 asg_desired_capacity = 2
