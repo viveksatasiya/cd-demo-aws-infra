@@ -42,6 +42,10 @@ resource "aws_lb_listener_rule" "ecs_alb_listener_rule" {
       values = ["/"]
     }
   }
+
+  lifecycle {
+    ignore_changes = [action]
+  }
 }
 
 
