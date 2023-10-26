@@ -76,7 +76,7 @@ resource "aws_lb_target_group" "ecs_tg_green" {
   health_check {
     enabled             = true
     interval            = 30
-    path                = "/"
+    path                = "/health"
     timeout             = 5
     healthy_threshold   = 2
     unhealthy_threshold = 2
